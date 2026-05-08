@@ -24,6 +24,10 @@ use App\Http\Controllers\SchoolSessionController;
 use App\Http\Controllers\AcademicSettingController;
 use App\Http\Controllers\AssignedTeacherController;
 use App\Http\Controllers\Auth\UpdatePasswordController;
+use App\Http\Controllers\FinancialController;
+use App\Http\Controllers\StudentFeeController;
+use App\Http\Controllers\ExpenseController;
+use App\Http\Controllers\TeacherSalaryController;
 
 /*
 |--------------------------------------------------------------------------
@@ -172,6 +176,21 @@ Route::middleware(['auth'])->group(function () {
     Route::get('courses/assignments/index', [AssignmentController::class, 'getCourseAssignments'])->name('assignment.list.show');
     Route::get('courses/assignments/create', [AssignmentController::class, 'create'])->name('assignment.create');
     Route::post('courses/assignments/create', [AssignmentController::class, 'store'])->name('assignment.store');
+
+    // Financial Management Routes (Admin Only)
+    Route::middleware('role:admin')->group(function () {
+        Route::get('/finances/dashboard', [FinancialController::class, 'dashboard'])->name('finances.dashboard');
+        Route::get('/finances/student-fees', [FinancialController::class, 'studentFees'])->name('finances.student-fees');
+        Route::post('/finances/student-fees/record', [StudentFeeController::class, 'recordPayment'])->name('finances.student-fees.record');
+        
+        Route::get('/finances/expenses', [FinancialController::class, 'expenses'])->name('finances.expenses');
+        Route::post('/finances/expenses/store', [ExpenseController::class, 'store'])->name('finances.expenses.store');
+        Route::delete('/finances/expenses/{id}', [ExpenseController::class, 'delete'])->name('finances.expenses.delete');
+        
+        Route::get('/finances/salaries', [FinancialController::class, 'salaries'])->name('finances.salaries');
+        Route::post('/finances/salaries/store', [TeacherSalaryController::class, 'store'])->name('finances.salaries.store');
+        Route::delete('/finances/salaries/{id}', [TeacherSalaryController::class, 'delete'])->name('finances.salaries.delete');
+    });
 
     // Update password
     Route::get('password/edit', [UpdatePasswordController::class, 'edit'])->name('password.edit');
